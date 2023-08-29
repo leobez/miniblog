@@ -51,6 +51,8 @@ function App() {
 				<div className="container">
 					<Routes>
 						<Route path='/' element={<Home/>}></Route>
+						<Route path="/miniblog" element={<Navigate to="/"/>}></Route>
+
 						<Route path='/about' element={<About/>}></Route>
 						<Route path='/search' element={<Search/>}></Route> 
 						<Route path="/posts/:id" element={<Post/>}></Route>
