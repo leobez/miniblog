@@ -120,3 +120,7 @@ body {
 	max-width: 500px;
 	overflow: hidden;
   }
+
+  input[type=text], input[type=email], input[type=password] {
+	min-width: 300px;
+  }

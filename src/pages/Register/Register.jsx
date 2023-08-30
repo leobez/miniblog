@@ -4,6 +4,7 @@ import styles from "./Register.module.css"
 
 import {useState, useEffect} from "react"
 import { useAuthentication } from '../../hooks/useAuthentication'
+import { useFetchDocuments } from '../../hooks/useFetchDocuments'
 
 const Register = () => {
 
@@ -15,10 +16,18 @@ const Register = () => {
 
 	const {createUser, error: authError, loading} = useAuthentication();
 
+	const {documents} = useFetchDocuments("users", null, null)
+
 	const handleSubmit = async (e) => {
 		e.preventDefault()
 
 		setError("")
+
+		// Limite máximo de usuários: 5
+		if (documents.length >= 5) {
+			setError("Numero maximo de usuário atingidos.")			
+			return;
+		}
 
 		const user = {
 			displayName: displayName,

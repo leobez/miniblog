@@ -29,8 +29,8 @@ const CreatePost = () => {
 		e.preventDefault()
 		setFormError("")
 
-		// Limite máximo de posts por usuário: 3
-		if (documents.length >= 3) {
+		// Limite máximo de posts por usuário: 5
+		if (documents.length >= 5) {
 			setFormError("Numero maximo de posts atingido!")			
 			return;
 		}

@@ -10,6 +10,8 @@ import {
 
 import {useState, useEffect} from "react"
 
+import { useInsertDocument } from "./useInsertDocument"
+
 export const useAuthentication = () => {
 
 	const [error, setError] = useState(null)
@@ -20,6 +22,8 @@ export const useAuthentication = () => {
 	const [cancelled, setCancelled] = useState(false)
 
 	const auth = getAuth()
+
+	const {insertDocument, response} = useInsertDocument("users")
 
 	const checkIfIsCancelled = () => {
 		if (cancelled){
@@ -40,7 +44,9 @@ export const useAuthentication = () => {
 				auth,
 				data.email,
 				data.password
-			) 
+			)
+			
+			insertDocument({uid: user.uid})
 
 			await updateProfile(user, {
 				displayName: data.displayName
