@@ -2,12 +2,14 @@
  
 import styles from "./CreatePost.module.css"
 
-import { useState } from 'react'
-import { Navigate, useNavigate } from "react-router-dom"
+import { useState, useEffect } from 'react'
+import { useNavigate } from "react-router-dom"
 
 import { useAuthValue } from '../../context/AuthContext'
 
 import { useInsertDocument } from '../../hooks/useInsertDocument'
+
+import { useFetchDocuments } from "../../hooks/useFetchDocuments"
 
 const CreatePost = () => {
 
@@ -18,14 +20,20 @@ const CreatePost = () => {
 	const [formError, setFormError] = useState("")
 
 	const {user} = useAuthValue()
-
-	const {insertDocument, response} = useInsertDocument("posts")
+	const {insertDocument, response} = useInsertDocument("posts", user.uid)
+	const {documents} = useFetchDocuments("posts", null, user.uid)
 
 	const navigate = useNavigate()
 
 	const handleSubmit = (e) => {
 		e.preventDefault()
 		setFormError("")
+
+		// Limite máximo de posts por usuário: 3
+		if (documents.length >= 3) {
+			setFormError("Numero maximo de posts atingido!")			
+			return;
+		}
 
 		// Validate image URL
 		try {	
@@ -42,6 +50,12 @@ const CreatePost = () => {
 		if(!title || !image || !tags || !body) {
 			setFormError("Por favor, preencha todos os campos!")
 			return;
+		}
+
+		// checar tamanho dos campos
+		if (title.length > 50 || image.length > 200 || body.length > 100 || tags.length > 100) {
+			setFormError("Por favor, envie textos com no máximo 100 caracteres!")
+			return;	
 		}
 
 		insertDocument({

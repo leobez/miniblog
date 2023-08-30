@@ -4,6 +4,8 @@ import { db } from "../firebase/config"
 
 import { collection, addDoc, Timestamp } from "firebase/firestore";
 
+import { useFetchDocuments } from "./useFetchDocuments";
+
 const initialState = {
 	loading: null,
 	error: null,
@@ -24,7 +26,7 @@ const insertReducer = (state, action) => {
 
 }
 
-export const useInsertDocument = (docCollection) => {
+export const useInsertDocument = (docCollection, uid) => {
 
 	const [response, dispatch] = useReducer(insertReducer, initialState)
 
@@ -50,14 +52,11 @@ export const useInsertDocument = (docCollection) => {
 				collection(db, docCollection),
 				newDocument
 			)
-
 			checkCancelBeforeDispatch({
 				type: "INSERTED_DOC",
 				payload: insertedDocument,
 			})
-
 		} catch (error) {
-
 			checkCancelBeforeDispatch({
 				type: "ERROR",
 				payload: error.message,
