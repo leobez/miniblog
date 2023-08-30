@@ -32,7 +32,6 @@ const Register = () => {
 		}
 
 		const res = await createUser(user)
-
 	} 
 
 	useEffect(() => {
