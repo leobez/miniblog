@@ -2,9 +2,7 @@ import { useState, useEffect, useReducer } from "react";
 
 import { db } from "../firebase/config"
 
-import { collection, addDoc, Timestamp } from "firebase/firestore";
-
-import { useFetchDocuments } from "./useFetchDocuments";
+import { collection, addDoc, Timestamp, setDoc, doc} from "firebase/firestore";
 
 const initialState = {
 	loading: null,
@@ -26,7 +24,7 @@ const insertReducer = (state, action) => {
 
 }
 
-export const useInsertDocument = (docCollection, uid) => {
+export const useInsertDocument = (docCollection) => {
 
 	const [response, dispatch] = useReducer(insertReducer, initialState)
 
@@ -40,22 +38,41 @@ export const useInsertDocument = (docCollection, uid) => {
 		}
 	}
 
-	const insertDocument = async(document) => {
+	const insertDocument = async(document, uid=null) => {
 
 		checkCancelBeforeDispatch({
 			type: "LOADING",
 		})
 
 		try {
-			const newDocument = {...document, createdAt: Timestamp.now()}
-			const insertedDocument = await addDoc(
-				collection(db, docCollection),
-				newDocument
-			)
-			checkCancelBeforeDispatch({
-				type: "INSERTED_DOC",
-				payload: insertedDocument,
-			})
+			
+			if (!uid) {
+				const newDocument = {...document, createdAt: Timestamp.now()}
+				const colRef = collection(db, docCollection)
+				const insertedDocument = await addDoc(colRef, newDocument)
+
+				checkCancelBeforeDispatch({
+					type: "INSERTED_DOC",
+					payload: insertedDocument,
+				})
+
+			} else {
+				// In case uid was passed as argument, i want to insert a new doc to users collection in order to track users.
+
+				// Define document
+				const newDocument = {...document, createdAt: Timestamp.now()}
+
+				// Add document with specified id (in this case, it will be the user uid)
+				await setDoc(
+					doc(db, "users", uid), newDocument
+				)
+
+				checkCancelBeforeDispatch({
+					type: "INSERTED_DOC",
+					payload: newDocument,
+				})
+			}
+
 		} catch (error) {
 			checkCancelBeforeDispatch({
 				type: "ERROR",

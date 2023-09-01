@@ -19,8 +19,8 @@ const Register = () => {
 	const {documents} = useFetchDocuments("users", null, null)
 
 	const handleSubmit = async (e) => {
-		e.preventDefault()
 
+		e.preventDefault()
 		setError("")
 
 		// Limite máximo de usuários: 5
@@ -40,7 +40,7 @@ const Register = () => {
 			return;
 		}
 
-		const res = await createUser(user)
+		await createUser(user)
 	} 
 
 	useEffect(() => {

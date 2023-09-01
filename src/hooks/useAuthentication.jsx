@@ -5,7 +5,7 @@ import {
 	createUserWithEmailAndPassword,
 	signInWithEmailAndPassword,
 	updateProfile,
-	signOut
+	signOut,
 } from "firebase/auth"
 
 import {useState, useEffect} from "react"
@@ -45,13 +45,14 @@ export const useAuthentication = () => {
 				data.email,
 				data.password
 			)
-			
-			insertDocument({uid: user.uid})
-
+						
 			await updateProfile(user, {
 				displayName: data.displayName
+				
 			})
-
+			
+			await insertDocument({}, user.uid)
+			
 			setLoading(false)
 
 			return user
@@ -84,6 +85,7 @@ export const useAuthentication = () => {
 
 	// login - sign in
 	const login = async(data) => {
+
 		checkIfIsCancelled()
 
 		setLoading(true)
