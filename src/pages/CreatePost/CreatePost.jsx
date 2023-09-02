@@ -25,7 +25,22 @@ const CreatePost = () => {
 
 	const navigate = useNavigate()
 
-	const handleSubmit = (e) => {
+	const isValidSize = async(url) => {
+		return fetch(url, {
+			method: 'HEAD'
+		}).then(response => {
+			const contentLength = response.headers.get('content-length');
+			if (contentLength > 100000) {
+				return false
+			}
+			return true
+		}).catch(error => {
+			return error
+		})
+	}
+
+	const handleSubmit = async(e) => {
+
 		e.preventDefault()
 		setFormError("")
 
@@ -35,11 +50,38 @@ const CreatePost = () => {
 			return;
 		}
 
-		// Validate image URL
 		try {	
-			new URL(image)
+
+			// Validate image URL
+			const url = new URL(image)
+			
+			// Validate image height and width. max: 1280x720
+			const isValidHeightWidth = (url) => {
+				const img = new Image();
+				img.src = url;
+
+				if (img.naturalHeight > 1280 || img.naturalWidth > 720) {
+					return false
+				}
+				return true
+			};
+
+			if (!isValidHeightWidth(url)) {
+				throw "Dimensões muito grandes. Tamanho máximo: 1280 x 720"
+			}
+
+			// Validate image size. max: 100kb
+			const result = await isValidSize(url);
+			if (!result) {
+				throw "Imagem muito grande. Máximo: 100kb"
+			} 
+
 		} catch (error) {
-			setFormError("A imagem precisa ser uma URL.")
+			if (error) {
+				setFormError(error)
+			} else {
+				setFormError("A imagem precisa ser uma URL.")
+			}
 			return;
 		}
 
