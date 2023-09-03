@@ -2,8 +2,8 @@
 import styles from "./Home.module.css";
 
 // hooks
-import { useFetchDocuments } from "../../hooks/useFetchDocuments";
 import { useNavigate, Link } from "react-router-dom";
+import { useLazyFetchDocuments } from "../../hooks/useLazyFetchDocuments";
 
 // react
 import { useState } from "react";
@@ -12,15 +12,22 @@ import { useState } from "react";
 import PostDetail from "../../components/PostDetail";
 
 const Home = () => {
-  const { documents: posts, loading } = useFetchDocuments("posts");
+	const { documents: posts, loading, limitRef, setLimitRef} = useLazyFetchDocuments("posts");
+	const navigate = useNavigate();
+	const [query, setQuery] = useState("");
 
-  const navigate = useNavigate();
-
-  const [query, setQuery] = useState("");
+	// Instead of scroll, try to check if last element is visible with observer i guess
+	window.addEventListener('scroll', () => {	
+		// Verify if user is getting closer to end of screen
+		if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 150) {
+			if (limitRef >= 100) return setLimitRef(100)
+			setLimitRef((prev) => prev + 1)
+		}
+		
+  });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     if (query) {
       return navigate(`/search?q=${query}`);
     }
@@ -47,7 +54,7 @@ const Home = () => {
             </Link>
           </div>
         )}
-        {posts && posts.map((post) => <PostDetail key={post.id} post={post} />)}
+        {posts && posts.map((post) => <PostDetail key={post.id} post={post} className="post" />)}
       </div>
     </div>
   );

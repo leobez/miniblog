@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import {db} from "../firebase/config"
-import {collection, query, orderBy, onSnapshot, where, QuerySnapshot} from "firebase/firestore"
+import {collection, query, orderBy, onSnapshot, where} from "firebase/firestore"
 
 export const useFetchDocuments = (docCollection, search=null, uid=null) => {
 
@@ -15,6 +15,7 @@ export const useFetchDocuments = (docCollection, search=null, uid=null) => {
 	useEffect(() => {
 
 		const loadData = async() => {
+
 			if (cancelled) return;
 
 			setLoading(true)
@@ -46,7 +47,7 @@ export const useFetchDocuments = (docCollection, search=null, uid=null) => {
 					)
 				})
 				setLoading(false)
-
+			
 			} catch (error) {
 				setError(error.message)
 				setLoading(false)
@@ -61,7 +62,5 @@ export const useFetchDocuments = (docCollection, search=null, uid=null) => {
 		return () => setCancelled(true)
 	}, [])
 
-
 	return {documents, loading, error}
-
 }
