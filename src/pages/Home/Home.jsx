@@ -15,38 +15,30 @@ const Home = () => {
 	const { documents: posts, loading, limitRef, setLimitRef} = useLazyFetchDocuments("posts");
 	const navigate = useNavigate();
 	const [query, setQuery] = useState("");
-	const [cancelled, setCancelled] = useState(false)
-	const postsRef = useRef(null)
+	const limiterRef = useRef(null)
+	const MAX_POST_ALLOWED_ON_SCREEN = 100;
 
-
-	// TENTAR VERIFICAR SE O ELEMENTO PAI POSSUI SEUS ULTIMOS 100 PIXEIS VISIVEIS.
-	// CASO SIM, PERMITIR O FETCH DE MAIS POSTS E REZAR PARA QUE OS ULTIMOS 100 PIXEIS DEIXEM DE SER VISIVEIS
 	const observer = new IntersectionObserver((entries) => {
-
-		const postsContainerElement = entries[0]
-		console.log("postsContainerElement: ", postsContainerElement)
-
-/* 		if (!lastElement.isIntersecting) return 
-
-		setLimitRef((prev) => prev + 1)
-		console.log("DEIXANDO DE OBSERVAR: ", lastElement)
-		observer.unobserve(lastElement.target) 
-
-		console.log("PASSANDO A OBSERVAR: ", parentElement.target.lastChild)
-		//observer.observe(postsRef.current.lastChild)   */    
+		const limiterElement = entries[0]
+ 		if (!limiterElement.isIntersecting) return 
+ 		setLimitRef((prev) => prev + 5)
 	}, {
-		rootMargin: "100px",
+		rootMargin: "300px",
 	})
 
+	useEffect(() => {
+		if (limitRef >= MAX_POST_ALLOWED_ON_SCREEN) {
+			limiterRef.current.remove()
+		}
+	}, [limitRef])
+
 	useLayoutEffect(() => {
-		if (postsRef.current && !cancelled) {
-			if (postsRef.current.lastChild != null) {
-				console.log("OBSERVANDO: ", postsRef.current)
-				observer.observe(postsRef.current)
+		if (limiterRef.current) {
+			if (limiterRef.current != null) {
+				setTimeout(() => observer.observe(limiterRef.current), 1000)
 			} 
 		}
-		return () => setCancelled(true)
-	}, [posts, cancelled])
+	}, [])
 
 	const handleSubmit = (e) => {
 		e.preventDefault();
@@ -67,7 +59,7 @@ const Home = () => {
 				<button className="btn btn-dark">Pesquisar</button>
 			</form>
 			
-			<div className="post-list" ref={postsRef}>
+			<div className="post-list">
 				{loading && <p>Carregando...</p>}
 				{posts && posts.length === 0 && (
 				<div className={styles.noposts}>
@@ -77,8 +69,9 @@ const Home = () => {
 					</Link>
 				</div>
 				)}
-				{posts && posts.map((post, index) => <PostDetail key={post.id} post={post} index={index}/>)}
+				{posts && posts.map((post) => <PostDetail key={post.id} post={post}/>)}
 			</div>
+			<div className="limiter" ref={limiterRef}></div>
 		</div>
 	);
 };

@@ -11,15 +11,13 @@ export const useLazyFetchDocuments = (docCollection) => {
 	// Cleanup
 	// deal with memory leak
 	const [cancelledLazy, setCancelledLazy] = useState(false)
-	const [limitRef, setLimitRef] = useState(5)
+	const [limitRef, setLimitRef] = useState(10)
 
 	useEffect(() => {
 
 		const loadLazyData = async() => {
 			
-			console.log('NEW LIMIT: ', limitRef)
-			if (cancelledLazy) return;
-			console.log('NEW LIMIT: ', limitRef)
+			//if (cancelledLazy) return;
 
 			setLoading(true)
 
