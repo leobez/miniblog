@@ -35,7 +35,8 @@ const Home = () => {
 	useLayoutEffect(() => {
 		if (limiterRef.current) {
 			if (limiterRef.current != null) {
-				setTimeout(() => observer.observe(limiterRef.current), 1000)
+				setTimeout(
+					() => {if (limiterRef.current != null) observer.observe(limiterRef.current)},1000)
 			} 
 		}
 	}, [])
