@@ -32,13 +32,18 @@ const Home = () => {
 		}
 	}, [limitRef])
 
-	useLayoutEffect(() => {
-		if (limiterRef.current) {
-			if (limiterRef.current != null) {
-				setTimeout(
-					() => {if (limiterRef.current != null) observer.observe(limiterRef.current)},1000)
+	useEffect(() => {
+
+		const activateObserver = setTimeout(() => {
+			if (limiterRef.current) {
+				if (limiterRef.current != null) {
+					observer.observe(limiterRef.current)
+				}
 			} 
-		}
+		}, 1000)
+
+		return () => clearInterval(activateObserver)
+		
 	}, [])
 
 	const handleSubmit = (e) => {
