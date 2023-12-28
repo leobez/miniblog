@@ -25,7 +25,7 @@ const Register = () => {
 
 		// Limite máximo de usuários: 5
 		if (documents.length >= 5) {
-			setError("Numero maximo de usuário atingidos.")			
+			setError("Número máximo de usuários atingido.")			
 			return;
 		}
 
